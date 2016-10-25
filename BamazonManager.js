@@ -22,7 +22,9 @@ function managerPrompt(){
 
 			case "View Low Inventory":
 				here.dab.query("SELECT * FROM Products WHERE StockQuantity < 5", function(err, res) {
-					if (err) {throw (err)}
+					if (err) {
+						throw (err);
+					}
 					for (var i = 0; i < res.length; i++) {
 					    console.log(res[i].ItemID + " | " + res[i].ProductName + " | $" + res[i].Price);
 					}
@@ -63,7 +65,38 @@ function managerPrompt(){
 				});
 				break;
 
-			// case ""
+			case "Add New Product":
+				inquirer.prompt([
+				{
+					type: 'input',
+					message: 'What is the name of the product you want to add?',
+					name: 'prodName',
+				},
+				{
+					type: 'input',
+					message: 'What is the name of the department?',
+					name: 'deptName'
+				},
+				{
+					type: 'input',
+					message: 'Set the price of the product',
+					name: 'price'
+				},
+				{
+					type: 'input',
+					message: 'Set the stock quantity',
+					name: 'quantity'
+				}
+				]).then(function(answers) {
+					
+					here.dab.query("INSERT INTO Products (ProductName, DepartmentName, Price, StockQuantity) VALUES (?, ?, ?, ?)", [answers.prodName, answers.deptName, parseInt(answers.price), parseInt(answers.quantity)], function(err, res) {
+						if (err) {
+							throw(err);
+						}
+
+						console.log('New Item Added');
+					})
+				})
 		}
 	});
 }	

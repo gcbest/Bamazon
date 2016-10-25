@@ -61,7 +61,21 @@ function askForOrder() {
 							console.log('Order Placed');
 							// console.log('New Stock: ' + res[i].StockQuantity);
 						});
-						
+						var revenue = answers.numUnits * parseInt(res[i].Price);
+						bamazon_db.query("SELECT TotalSales FROM Departments", function(err, res) {
+							if (err) {
+								throw (err);
+							}
+							var updatedRevenue = revenue + parseInt(res[0].TotalSales);
+							console.log(res[0].TotalSales);
+							bamazon_db.query("UPDATE Departments SET TotalSales= ?", [updatedRevenue], function(err, res) {
+								if (err) {
+									throw (err);
+								}
+
+								console.log('Total Sales Updated');
+							});
+						});
 					}
 					else {
 						console.log('Insufficient Quantity!');
@@ -72,7 +86,7 @@ function askForOrder() {
 	});	
 }
 
-// printAllInfo();
+printAllInfo();
 
 exports.printAllInfo = function() {
 	bamazon_db.query("SELECT * FROM Products", function(err, res) {
@@ -83,5 +97,5 @@ exports.printAllInfo = function() {
 	});
 }
 
-// exports.dab = bamazon_db;
+exports.dab = bamazon_db;
 
