@@ -86,7 +86,7 @@ function askForOrder() {
 	});	
 }
 
-printAllInfo();
+// printAllInfo();
 
 exports.printAllInfo = function() {
 	bamazon_db.query("SELECT * FROM Products", function(err, res) {
