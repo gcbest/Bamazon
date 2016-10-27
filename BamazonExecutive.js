@@ -21,7 +21,6 @@ function execPrompt() {
 					    	if (err) {
 					    		throw (err);
 					    	}
-					    	// console.log('Total Profit Updated');
 					    });
 
 					    console.log(res[i].DepartmentID + " | " + res[i].DepartmentName + " | $" + res[i].OverHeadCosts + " | $" + res[i].TotalSales + " | $" + res[i].TotalProfit);

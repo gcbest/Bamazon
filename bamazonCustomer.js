@@ -53,21 +53,21 @@ function askForOrder() {
 					if(parseInt(answers.ID) === res[i].ItemID) {
 						if((res[i].StockQuantity > 0)  && (res[i].StockQuantity - parseInt(answers.numUnits) > 0)) {
 							var newStockQuantity = res[i].StockQuantity - parseInt(answers.numUnits);
-							console.log(newStockQuantity);
-							// updateStockQuantity(answers.ID, newStockQuantity)
+							console.log("The new stock quantity is " + newStockQuantity);
 							bamazon_db.query("UPDATE Products SET StockQuantity= ? WHERE ItemID= ?", [newStockQuantity, answers.ID], function(err, res){
 								if (err) {throw (err)}
 								console.log('Order Placed');
-								// console.log('New Stock: ' + res[i].StockQuantity);
 							});
+							var deptName = res[i].DepartmentName;
+							console.log(deptName);
 							var revenue = answers.numUnits * parseInt(res[i].Price);
-							bamazon_db.query("SELECT TotalSales FROM Departments", function(err, res) {
+							bamazon_db.query("SELECT TotalSales FROM Departments WHERE DepartmentName= ?", [deptName], function(err, res) {
 								if (err) {
 									throw (err);
 								}
 								var updatedRevenue = revenue + parseInt(res[0].TotalSales);
-								console.log(res[0].TotalSales);
-								bamazon_db.query("UPDATE Departments SET TotalSales= ?", [updatedRevenue], function(err, res) {
+								console.log(updatedRevenue);
+								bamazon_db.query("UPDATE Departments SET TotalSales= ? WHERE DepartmentName= ?", [updatedRevenue, deptName], function(err, res) {
 									if (err) {
 										throw (err);
 									}
@@ -84,19 +84,6 @@ function askForOrder() {
 			});
 		});	
 	}
-
-
-
-// printAllInfo();
-
-exports.printAllInfo = function() {
-	bamazon_db.query("SELECT * FROM Products", function(err, res) {
-	    for (var i = 0; i < res.length; i++) {
-	        console.log(res[i].ItemID + " | " + res[i].ProductName + " | $" + res[i].Price);
-	    }
-	    console.log("-----------------------------------");
-	});
-}
 
 exports.dab = bamazon_db;
 exports.bamObj = bamazonObj;
