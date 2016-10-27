@@ -1,11 +1,12 @@
 var inquirer = require('inquirer');
-var here = require('./bamazonCustomer.js');
+var bamazon = require('./bamazonCustomer.js');
 
 
 /***********
 	Add NUM and > 0 VALIDATION
 ************/
 
+var exports = module.exports = {};
 
 function managerPrompt(){
 	inquirer.prompt([
@@ -17,11 +18,11 @@ function managerPrompt(){
 	}]).then(function(answers) {
 		switch (answers.choice) {
 			case "View Products for Sale": 
-				here.printAllInfo();
+				bamazon.printAllInfo();
 				break;
 
 			case "View Low Inventory":
-				here.dab.query("SELECT * FROM Products WHERE StockQuantity < 5", function(err, res) {
+				bamazon.dab.query("SELECT * FROM Products WHERE StockQuantity < 5", function(err, res) {
 					if (err) {
 						throw (err);
 					}
@@ -45,13 +46,13 @@ function managerPrompt(){
 					name: 'numItems'
 				}
 				]).then(function(answers2) {
-					here.dab.query("SELECT * FROM Products", function(err, res) {
+					bamazon.dab.query("SELECT * FROM Products", function(err, res) {
 						for (var i = 0; i < res.length; i++) {
 							console.log('this rean');
 							if (answers2.whichItem == res[i].ProductName) {
 								var newQuantity = res[i].StockQuantity + parseInt(answers2.numItems);
 								console.log(newQuantity);
-								here.dab.query("UPDATE Products SET StockQuantity= ? WHERE ProductName= ?", [newQuantity, answers2.whichItem], function(err, res) {
+								bamazon.dab.query("UPDATE Products SET StockQuantity= ? WHERE ProductName= ?", [newQuantity, answers2.whichItem], function(err, res) {
 									if (err) {
 										throw err
 									}
@@ -89,7 +90,7 @@ function managerPrompt(){
 				}
 				]).then(function(answers) {
 					
-					here.dab.query("INSERT INTO Products (ProductName, DepartmentName, Price, StockQuantity) VALUES (?, ?, ?, ?)", [answers.prodName, answers.deptName, parseInt(answers.price), parseInt(answers.quantity)], function(err, res) {
+					bamazon.dab.query("INSERT INTO Products (ProductName, DepartmentName, Price, StockQuantity) VALUES (?, ?, ?, ?)", [answers.prodName, answers.deptName, parseInt(answers.price), parseInt(answers.quantity)], function(err, res) {
 						if (err) {
 							throw(err);
 						}
@@ -101,5 +102,5 @@ function managerPrompt(){
 	});
 }	
 
+exports.managerPrompt = managerPrompt;
 
-managerPrompt();

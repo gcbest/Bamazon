@@ -14,77 +14,78 @@ var bamazon_db = mysql.createConnection({
 	database: 'ds5vfqjdiqobm84y'
 });
 
-function insert() {
-	return "INSERT INTO Products(ProductName, DepartmentName, Price, StockQuantity) VALUES ('alpha', 'omega', 50, 100)";
-}
+var bamazonObj = {
+	printAllInfo: function() {
+		bamazon_db.query("SELECT * FROM Products", function(err, res) {
+		    for (var i = 0; i < res.length; i++) {
+		        console.log(res[i].ItemID + " | " + res[i].ProductName + " | $" + res[i].Price);
+		    }
+		    console.log("-----------------------------------");
+		    askForOrder();
+		});
+	}
 
-function printAllInfo() {
-	bamazon_db.query("SELECT * FROM Products", function(err, res) {
-	    for (var i = 0; i < res.length; i++) {
-	        console.log(res[i].ItemID + " | " + res[i].ProductName + " | $" + res[i].Price);
-	    }
-	    console.log("-----------------------------------");
-	    askForOrder();
-	});
 }
 
 function askForOrder() {
-	inquirer.prompt([
-	{
-		type: 'input',
-		message: 'Please enter the ItemID of your purchase',
-		name: 'ID',
-		validate: function(value) {
-            if (isNaN(value) == false) {
-                return true;
-            } else {
-                return false;
-            }
-    	}
-	},
-	{
-		type: 'input',
-		message: 'How many units would you like to buy?',
-		name: 'numUnits'	
-	}
-	]).then(function(answers) {
-		console.log('Checking store');
-		bamazon_db.query("SELECT * FROM Products", function(err, res) {
-			for (var i = 0; i < res.length; i++){
-				if(parseInt(answers.ID) === res[i].ItemID) {
-					if((res[i].StockQuantity > 0)  && (res[i].StockQuantity - parseInt(answers.numUnits) > 0)) {
-						var newStockQuantity = res[i].StockQuantity - parseInt(answers.numUnits);
-						console.log(newStockQuantity);
-						// updateStockQuantity(answers.ID, newStockQuantity)
-						bamazon_db.query("UPDATE Products SET StockQuantity= ? WHERE ItemID= ?", [newStockQuantity, answers.ID], function(err, res){
-							if (err) {throw (err)}
-							console.log('Order Placed');
-							// console.log('New Stock: ' + res[i].StockQuantity);
-						});
-						var revenue = answers.numUnits * parseInt(res[i].Price);
-						bamazon_db.query("SELECT TotalSales FROM Departments", function(err, res) {
-							if (err) {
-								throw (err);
-							}
-							var updatedRevenue = revenue + parseInt(res[0].TotalSales);
-							console.log(res[0].TotalSales);
-							bamazon_db.query("UPDATE Departments SET TotalSales= ?", [updatedRevenue], function(err, res) {
+		inquirer.prompt([
+		{
+			type: 'input',
+			message: 'Please enter the ItemID of your purchase',
+			name: 'ID',
+			validate: function(value) {
+	            if (isNaN(value) == false) {
+	                return true;
+	            } else {
+	                return false;
+	            }
+	    	}
+		},
+		{
+			type: 'input',
+			message: 'How many units would you like to buy?',
+			name: 'numUnits'	
+		}
+		]).then(function(answers) {
+			console.log('Checking store');
+			bamazon_db.query("SELECT * FROM Products", function(err, res) {
+				for (var i = 0; i < res.length; i++){
+					if(parseInt(answers.ID) === res[i].ItemID) {
+						if((res[i].StockQuantity > 0)  && (res[i].StockQuantity - parseInt(answers.numUnits) > 0)) {
+							var newStockQuantity = res[i].StockQuantity - parseInt(answers.numUnits);
+							console.log(newStockQuantity);
+							// updateStockQuantity(answers.ID, newStockQuantity)
+							bamazon_db.query("UPDATE Products SET StockQuantity= ? WHERE ItemID= ?", [newStockQuantity, answers.ID], function(err, res){
+								if (err) {throw (err)}
+								console.log('Order Placed');
+								// console.log('New Stock: ' + res[i].StockQuantity);
+							});
+							var revenue = answers.numUnits * parseInt(res[i].Price);
+							bamazon_db.query("SELECT TotalSales FROM Departments", function(err, res) {
 								if (err) {
 									throw (err);
 								}
+								var updatedRevenue = revenue + parseInt(res[0].TotalSales);
+								console.log(res[0].TotalSales);
+								bamazon_db.query("UPDATE Departments SET TotalSales= ?", [updatedRevenue], function(err, res) {
+									if (err) {
+										throw (err);
+									}
 
-								console.log('Total Sales Updated');
+									console.log('Total Sales Updated');
+								});
 							});
-						});
-					}
-					else {
-						console.log('Insufficient Quantity!');
-					}
+						}
+						else {
+							console.log('Insufficient Quantity!');
+						}
+					}	
 				}	
-			}	
-		});
-	});	
-}
+			});
+		});	
+	}
+
+
 
 // printAllInfo();
 
@@ -98,4 +99,5 @@ exports.printAllInfo = function() {
 }
 
 exports.dab = bamazon_db;
+exports.bamObj = bamazonObj;
 
