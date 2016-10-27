@@ -1,2 +1,4 @@
 # Bamazon
 Stores Product information in a MySQL database and allows users to buy products or update the database through the command line
+
+![First Screen](markdown-images/first-page.png)
